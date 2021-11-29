@@ -9,6 +9,7 @@ import com.interview.coins.service.util.CoinChangeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +23,15 @@ public class CoinChangeServiceImpl implements CoinChangeService {
 
     @Override
     public List<Coins> addCoins(List<Coins> coins) {
-        Iterable<Coins> saved = repository.saveAll(coins);
-        return getList(saved);
+        try {
+            Iterable<Coins> saved = repository.saveAll(coins);
+            return getList(saved);
+        }catch (Exception ex){
+            throw new ApplicationException(
+                    "Denomination Already Exists, please update the coins count",
+                    HttpStatus.BAD_REQUEST,
+                    ex.getMessage());
+        }
     }
 
     @Override
@@ -47,13 +55,18 @@ public class CoinChangeServiceImpl implements CoinChangeService {
 
         repository.saveAll(toSaveList);
 
-        if( toSaveList.isEmpty())
-            Optional.ofNullable(toSaveList).filter( s -> !s.isEmpty() ).
-                    orElseThrow(() -> new ApplicationException(
-                            String.format( "Change NOT available for bill %s",bill), HttpStatus.BAD_REQUEST   ));
-
         return info;
     }
+
+   /*
+    @Override
+    public List<Coins> updateDenomination(List<Coins> coins) {
+        List<String> denominations = coins.stream().map(c -> c.getDenomination()).collect(Collectors.toList());
+        Iterable iDenominations =  new ArrayList(denominations);
+        Iterable<Coins> filteredCoins = repository.findByDenomination(iDenominations);
+        List<Coins> ss = getList(filteredCoins);
+        return null;
+    } */
 
     private boolean isTypePresent(String type, List<Coins> coins) {
         return coins.stream().anyMatch( c -> c.getDenomination().equals( type));
@@ -66,8 +79,8 @@ public class CoinChangeServiceImpl implements CoinChangeService {
 
     }
 
-    private List<Coins> getList(Iterable<Coins> all) {
-        List<Coins> allCoins = new ArrayList<>();
+    private <T> List<T> getList(Iterable<T> all) {
+        List<T> allCoins = new ArrayList<>();
         all.forEach(allCoins::add);
         return allCoins;
     }

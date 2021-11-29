@@ -8,4 +8,5 @@ import java.io.Serializable;
 
 @Repository
 public interface CoinChangeRepository extends CrudRepository<Coins, Serializable> {
+    //Iterable<Coins> findByDenomination(Iterable<Serializable> denominations);
 }

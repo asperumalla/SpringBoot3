@@ -12,4 +12,6 @@ public interface CoinChangeService {
     List<Coins> addCoins(List<Coins> coins);
     List<Coins> getAllCoinsCount();
     CoinsChangeInfo getChangeByBill(int bill);
+
+    //List<Coins> updateDenomination(List<Coins> coins);
 }

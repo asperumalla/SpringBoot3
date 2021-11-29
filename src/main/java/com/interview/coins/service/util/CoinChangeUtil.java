@@ -55,7 +55,8 @@ public class CoinChangeUtil {
 
 
                  Optional<Coins> obj = table.get(i - coinDenomination).getCoins().stream().filter(c -> c.getDenomination().equals(coin)).findFirst();
-                 boolean checkCoinsAvailability = obj.isPresent() ? obj.get().getCoinsCount() < coins.get(coin) : true;
+                 boolean checkCoinsAvailability =
+                         obj.isPresent() ? obj.get().getCoinsCount() < coins.get(coin) : coins.get(coin) > 0;
 
                  if(min > table.get(i - coinDenomination).getTotalCoins()
                     && checkCoinsAvailability

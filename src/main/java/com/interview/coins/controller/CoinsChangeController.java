@@ -51,5 +51,13 @@ public class CoinsChangeController {
         CoinsChangeInfo changeCoins = service.getChangeByBill( bill);
         return new ResponseEntity<CoinsChangeInfo>(changeCoins, HttpStatus.OK);
     }
+/*
+    @PutMapping(path = "/change/add")
+    public ResponseEntity<List<Coins>> returnUpdatedCoins(
+            @RequestBody List<Coins> coins
+            ){
+        List<Coins> updatedCoins = service.updateDenomination(coins);
+        return new ResponseEntity<List<Coins>>(updatedCoins, HttpStatus.OK);
+    } */
 
 }
