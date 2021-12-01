@@ -12,8 +12,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -32,8 +34,8 @@ class CoinChangeServiceImplTest {
     @Test
     @DisplayName("test all coins counts")
     void testAllCoinsCounts() {
-        Iterable<Coins> emptyList = new ArrayList<>();
-        when(repository.findAll()).thenReturn(emptyList);
+        List<Coins> list = Collections.emptyList();
+        when(repository.findAll()).thenReturn(list);
         assertThat( service.getAllCoinsCount().isEmpty() ).isEqualTo(true);
     }
 

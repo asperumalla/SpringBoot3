@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ServiceConfig {
 
-    @Bean
-    public CoinChangeService getCoinChangeService(){
-        return new CoinChangeServiceImpl();
-    }
+//    @Bean
+//    public CoinChangeService getCoinChangeService(){
+//        return new CoinChangeServiceImpl();
+//    }
 }

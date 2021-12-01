@@ -20,13 +20,8 @@ public class CoinsChangeController {
 
     Logger logger = LoggerFactory.getLogger(CoinsChangeController.class);
 
-
-    private CoinChangeService service;
-
     @Autowired
-    public CoinsChangeController(CoinChangeService service) {
-        this.service = service;
-    }
+    private CoinChangeService service;
 
     @GetMapping(value = "/list")
     public ResponseEntity<List<Coins>> listChange(){
@@ -51,13 +46,13 @@ public class CoinsChangeController {
         CoinsChangeInfo changeCoins = service.getChangeByBill( bill);
         return new ResponseEntity<CoinsChangeInfo>(changeCoins, HttpStatus.OK);
     }
-/*
+
     @PutMapping(path = "/change/add")
     public ResponseEntity<List<Coins>> returnUpdatedCoins(
             @RequestBody List<Coins> coins
             ){
         List<Coins> updatedCoins = service.updateDenomination(coins);
         return new ResponseEntity<List<Coins>>(updatedCoins, HttpStatus.OK);
-    } */
+    }
 
 }
