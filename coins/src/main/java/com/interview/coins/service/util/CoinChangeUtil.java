@@ -2,6 +2,8 @@ package com.interview.coins.service.util;
 
 import com.interview.coins.dao.Coins;
 import com.interview.coins.dao.CoinsChangeInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,36 +11,61 @@ import java.util.stream.Collectors;
 public class CoinChangeUtil {
 
 
+    static Logger logger = LoggerFactory.getLogger(CoinChangeUtil.class);
     public static CoinsChangeInfo getChangeByBill(int bill, List<Coins> coins) {
 
         return coinsChangeRequestByBill(bill,coins);
 
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
 
-        List<Coins> coins = Arrays.asList( new Coins("1",1),
-        new Coins("6",2),
-        new Coins("3",5));
+        List<Coins> coins = Arrays.asList( new Coins("0.01",100),
+        new Coins("0.50",100),
+        new Coins("0.20",5));
         coinsChangeRequestByBill(7,coins);
-    }
+        String s = String.format("%.0f",(100*0.5));
+        String ss = String.format("%.2f",(50f/100));
+        System.out.print(ss);
+    } */
 
     private static CoinsChangeInfo coinsChangeRequestByBill(int bill, List<Coins> coins) {
 
-        /*
-        Calculate all the number of coins required for each bill amount
-         */
+        /* Calculate all the number of coins required for each bill amount */
+        bill*=100;
 
-        Map<String,Integer> coinsCount = coins.stream().collect(Collectors.toMap( k -> k.getDenomination(), v-> v.getCoinsCount() ));
+        /*Construct a map to hold coin denominations and its count*/
+        Map<String,Integer> coinsCount = coins.stream().collect(Collectors.toMap( k -> getIntKey(k.getDenomination()), v-> v.getCoinsCount() ));
 
         List< CoinsChangeInfo> table = new ArrayList<>();
         CoinsChangeInfo changeForZero = new CoinsChangeInfo(Collections.emptyList(), 0);
         table.add(0,changeForZero);
 
+        /*Calculate coins required for each of the amount for all the previous/lower amount until ZERO */
         for(int i =1 ; i<= bill; i++){
                 table.add(i, minimumCoinsFromPreviousBill(table,i,coinsCount) );
         }
-        return  table.get(bill) ;
+
+        CoinsChangeInfo coinsChangeInfo = table.get(bill)!=null? convertToActualDenominations(table.get(bill)): null; bill/=100;
+        logger.info("Coins Denomination as follows for bill:{} [{}]",bill,coinsChangeInfo == null ? "No Denominations Available":coinsChangeInfo);
+        return  coinsChangeInfo ;
+    }
+
+    private static CoinsChangeInfo convertToActualDenominations(CoinsChangeInfo coinsChangeInfo) {
+        List<Coins> coins =  coinsChangeInfo.getCoins().stream().map( c -> getFloatKey(c)).collect(Collectors.toList());
+        coinsChangeInfo.setCoins(coins);
+        return coinsChangeInfo;
+    }
+
+    private static Coins getFloatKey(Coins coin) {
+       String denomination =  String.format("%.2f",(Float.valueOf(coin.getDenomination())/100f));
+       coin.setDenomination(denomination);
+       return coin;
+    }
+
+    private static String getIntKey(String denomination) {
+        String returnInt = String.format("%.0f",(100*Float.valueOf(denomination)));
+        return returnInt;
     }
 
     private static CoinsChangeInfo minimumCoinsFromPreviousBill(List<CoinsChangeInfo> table, int i, Map<String,Integer> coins) {
@@ -48,7 +75,6 @@ public class CoinChangeUtil {
 
          for(String coin: coins.keySet()){
             int coinDenomination = Integer.valueOf(coin);
-
              if( (i - coinDenomination) > -1  &&
                      null != table.get(i - coinDenomination)
              ){
